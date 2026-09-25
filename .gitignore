@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# 应用本地配置：记录本机 MyVault 路径，含个人目录信息，禁止入库
+app.config
+
+# PyInstaller 打包产物
+build/
+dist/
+*.spec.bak
+
+# pytest
+.pytest_cache/
+
+# 虚拟环境
+venv/
