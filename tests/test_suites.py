@@ -53,11 +53,14 @@ def test_script_passes(script):
     timeout = 720 if script == "_test_packaging_smoke.py" else 600
     result = subprocess.run(
         [sys.executable, os.path.join(ROOT, script)],
-        cwd=ROOT, env=env, capture_output=True, text=True, timeout=timeout,
+        # 显式 utf-8：CI 的 windows runner 默认 locale 是 cp1252，
+        # text=True 会用它解码子进程的 UTF-8 中文输出而抛 UnicodeDecodeError
+        cwd=ROOT, env=env, capture_output=True,
+        encoding="utf-8", errors="replace", timeout=timeout,
     )
     if result.returncode in SKIP_EXIT_CODES:
         pytest.skip(f"{script}: {SKIP_EXIT_CODES[result.returncode]}；"
-                    f"stdout: {result.stdout.strip()[-500:]}")
+                    f"stdout: {(result.stdout or '').strip()[-500:]}")
     assert result.returncode == 0, (
         f"{script} 验证失败：\n...stdout 末尾 3000 字符...\n{result.stdout[-3000:]}\n"
         f"--- stderr 末尾 3000 字符 ---\n{result.stderr[-3000:]}")
